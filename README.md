@@ -1,2 +1,2 @@
 # js-nuxt
-Hemend  nuxt handler
+Hemend nuxt handler
