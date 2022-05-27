@@ -9,9 +9,24 @@ class Test extends prompet_1.default {
         return 'Balal';
     }
     handler() {
-        this.call(['balal', 'a', 'b', 'cc']);
-        this.call(['balal', 'a', 'b', 'cc']);
-        this.call(['balal', 'a', 'b', 'cc']);
+        const { Form } = require('enquirer');
+        const prompt = new Form({
+            name: 'user',
+            message: 'Please provide the following information:',
+            choices: [
+                { name: 'firstname', message: 'First Name' },
+                { name: 'lastname', message: 'Last Name' },
+                { name: 'username', message: 'GitHub username', initial: 'jonschlinkert' }
+            ]
+        });
+        prompt.run()
+            .then((value) => {
+            console.log('Answer:', value);
+            this.call(['balal', 'a', 'b', 'cc']);
+            this.call(['balal', 'a', 'b', 'cc']);
+            this.call(['balal', 'a', 'b', 'cc']);
+        })
+            .catch(console.error);
     }
 }
 exports.default = Test;

@@ -1,11 +1,9 @@
-import Command from '../command';
+import Command, { Options, Arguments } from '../command';
 export default class Test extends Command {
     aliases: string[];
-    cmd: string;
+    command: string;
     description: string;
-    handler(args: Array<string>): void;
-    options(): {
-        name: string;
-        describe: string;
-    }[];
+    handler(): void;
+    arguments(): Arguments;
+    options(): Options;
 }

@@ -8,22 +8,30 @@ class Test extends command_1.default {
     constructor() {
         super(...arguments);
         this.aliases = ['run', 'up'];
-        this.cmd = 'balal <key> [value]';
+        this.command = 'balal <name> [force]';
         this.description = 'Set a config variable';
     }
-    handler(args) {
-        console.log('99999999', args);
+    handler() {
+        console.log('99999999', this.argv, process.argv);
+    }
+    arguments() {
+        return [
+            {
+                name: 'name',
+                describe: 'name is required',
+                type: 'string'
+                // conflicts: 'email',
+            }
+        ];
     }
     options() {
         return [
             {
-                name: 'key',
-                describe: 'Key is required',
-                // conflicts: 'email',
-            },
-            {
-                name: 'value',
-                describe: 'Value is required',
+                name: 'force',
+                alias: 'f',
+                default: false,
+                describe: 'Force is optional',
+                type: 'boolean',
                 // conflicts: 'username'
             }
         ];

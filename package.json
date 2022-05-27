@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/hnuxt.js",
-    "test": "mocha --reporter spec"
+    "start": "npm run build & node dist/hnuxt.js",
+    "test": "npm run build & mocha --reporter spec",
+    "build": "tsc"
   },
   "keywords": [
     "hemend",

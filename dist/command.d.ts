@@ -1,7 +1,12 @@
 import yargs from 'yargs';
-export interface Option extends yargs.PositionalOptions {
+export interface Argument extends yargs.PositionalOptions {
     name: string;
-    required?: boolean;
+}
+export interface Arguments extends Array<Argument> {
+}
+export interface Option extends yargs.Options {
+    name: string;
+    default: any;
 }
 export interface Options extends Array<Option> {
 }
@@ -17,16 +22,28 @@ export interface Help {
     option: string;
     description: string;
 }
+export interface Argv {
+    args: {
+        [key: string]: unknown;
+    };
+    $0: string;
+    _: Array<string | number>;
+}
 export default abstract class Command {
-    private yargs;
+    private _yargs;
     protected aliases: Array<string>;
-    protected abstract cmd: string;
+    protected abstract command: string;
     protected abstract description: string;
-    constructor(yargs: any);
+    protected argv: Argv | undefined;
+    constructor(yargs: yargs.Argv);
+    arguments(): Arguments;
     options(): Options;
-    abstract handler(args: unknown, _?: any, $0?: any): void;
+    readonly setArgv: (argv: yargs.Arguments) => this;
+    get(name: string): any;
+    abstract handler(): void;
     getAliases(): Array<string>;
-    getCmd(): string | Array<string>;
+    getCommand(): string | Array<string>;
     getDescription(): string;
     call(params: any): this;
+    protected readonly yargs: () => yargs.Argv;
 }
