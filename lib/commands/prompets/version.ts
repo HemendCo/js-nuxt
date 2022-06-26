@@ -6,6 +6,7 @@ export default class Version extends Prompet {
   }
 
   handler() {
-    this.yargs().showVersion((s: any) => console.log('Version:', s));
+    // this.yargs().showVersion((s: any) => console.log('Version:', s));
+    this.yargs().showVersion();
   }
 }

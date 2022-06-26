@@ -102,6 +102,35 @@ const argv = yargs
         }
       });
 
+      const sortAlphabetically = (ascending:boolean) => {
+        return (ca:string, cb:string) => {
+          const a = ca.toLowerCase(); // ignore upper and lowercase
+          const b = cb.toLowerCase(); // ignore upper and lowercase
+
+          // equal items sort equally
+          if (a === b) {
+            return 0;
+          }
+          // 'version' or 'help' sort after anything else
+          else if (['version', 'help'].includes(a)) {
+            return 1;
+          }
+          else if (['version', 'help'].includes(b)) {
+            return -1;
+          }
+          // otherwise, if we're ascending, lowest sorts first
+          else if (ascending) {
+            return a < b ? -1 : 1;
+          }
+          // if descending, highest sorts first
+          else { 
+            return a < b ? 1 : -1;
+          }
+        }
+      };
+
+      choices.sort(sortAlphabetically(true));
+
       const prompt = new AutoComplete({
         name: 'Command',
         message: colors.success('Type the desired command or select from the list below:'),
@@ -126,4 +155,5 @@ const argv = yargs
   // .version('1.0.0')
   .help()
   .alias('help', 'h')
+  .alias('version', 'v')
   .argv;

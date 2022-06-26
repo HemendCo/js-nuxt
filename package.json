@@ -2,6 +2,7 @@
   "name": "hemend-js-nuxt",
   "version": "1.0.0",
   "description": "Hemend js nuxt",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -12,7 +13,8 @@
   "keywords": [
     "hemend",
     "nuxt",
-    "nuxtjs"
+    "nuxtjs",
+    "module"
   ],
   "author": "Balal Arast <arastbalal@gmail.com> (https://balalarast.com)",
   "license": "MIT",
