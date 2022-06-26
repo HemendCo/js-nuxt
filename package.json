@@ -33,7 +33,7 @@
   "dependencies": {
     "ansi-colors": "^4.1.1",
     "enquirer": "^2.3.6",
-    "hemend-js-library": "file:../js-library",
+    "hemend-js-library": "git+https://github.com/HemendCo/js-library.git",
     "semver": "^7.3.6",
     "yargs": "^17.4.1"
   },
