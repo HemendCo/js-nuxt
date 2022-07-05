@@ -87,9 +87,7 @@ export const request = (options, app) => {
         for(const j in REQUEST_METHODS) {
             const m = REQUEST_METHODS[j];
             Object.defineProperty(req, m + capitalizeFirstLetter(route.name), {
-                get: () => (method, data) => {
-                    return req[m](method, data, route);
-                }
+                get: () => (method, data) => req[m](method, data, route)
             });
         }
     }
