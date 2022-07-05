@@ -1,14 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // module.js
+const hemend_js_library_1 = require("hemend-js-library");
 const { resolve, join } = require('path');
 const { readdirSync } = require('fs');
 const hemendNuxtModule = function (moduleOptions) {
+    const namespace = 'hemend';
     // Compiler flags
     const isProduction = process.env.NODE_ENV === 'production';
     // Build module options
-    const options = Object.assign({
-        namespace: 'hemend',
+    const options = (0, hemend_js_library_1.extend)({
+        namespace,
+        storage: {
+            prefix: namespace,
+            driver: 'local',
+            ttl: 0
+        },
         debug: !isProduction
     }, this.options.hemend || {}, moduleOptions);
     // Resolve config paths
@@ -19,13 +26,12 @@ const hemendNuxtModule = function (moduleOptions) {
     const pluginsDir = resolve(cwd, 'plugins');
     const staticDir = resolve(cwd, 'static');
     const storeDir = resolve(cwd, 'store');
-    // expose the namespace / set a default
-    const { namespace } = options;
     // add all of the initial plugins
     const pluginsToSync = [
         '../nuxt/components/index.js',
         '../nuxt/store/index.js',
         '../nuxt/plugins/index.js',
+        '../nuxt/plugins/mixin.js',
         '../nuxt/debug.js',
         '../nuxt/middleware/index.js'
     ];
@@ -40,6 +46,10 @@ const hemendNuxtModule = function (moduleOptions) {
     const foldersToSync = [
         {
             path: '../nuxt/plugins/helpers',
+            recursive: false
+        },
+        {
+            path: '../nuxt/plugins/mixin',
             recursive: false
         },
         {

@@ -1,15 +1,24 @@
 // module.js
+import { extend } from 'hemend-js-library'
+
 const { resolve, join } = require('path')
 const { readdirSync } = require('fs')
 
 const hemendNuxtModule = function (this: any, moduleOptions: any) {
+  const namespace = 'hemend'
+
   // Compiler flags
   const isProduction = process.env.NODE_ENV === 'production'
 
   // Build module options
-  const options = Object.assign(
+  const options = extend(
     {
-      namespace: 'hemend',
+      namespace,
+      storage: {
+        prefix: namespace,
+        driver: 'local',
+        ttl: 0
+      },
       debug: !isProduction
     },
     this.options.hemend || {},
@@ -25,14 +34,12 @@ const hemendNuxtModule = function (this: any, moduleOptions: any) {
   const staticDir = resolve(cwd, 'static')
   const storeDir = resolve(cwd, 'store')
 
-  // expose the namespace / set a default
-  const { namespace } = options
-
   // add all of the initial plugins
   const pluginsToSync = [
     '../nuxt/components/index.js',
     '../nuxt/store/index.js',
     '../nuxt/plugins/index.js',
+    '../nuxt/plugins/mixin.js',
     '../nuxt/debug.js',
     '../nuxt/middleware/index.js'
   ]
@@ -52,6 +59,10 @@ const hemendNuxtModule = function (this: any, moduleOptions: any) {
       recursive: false
     },
     {
+      path: '../nuxt/plugins/mixin',
+      recursive: false
+    },
+    {
       path: '../nuxt/store/modules',
       recursive: false
     },
@@ -60,7 +71,7 @@ const hemendNuxtModule = function (this: any, moduleOptions: any) {
       recursive: true
     }
   ]
-  
+
   const addTemplate = (path: string, pathString: string, recursive: boolean=false) => {
     for (const dirent of readdirSync(path, { withFileTypes: true })) {
       if (dirent.isDirectory()) {

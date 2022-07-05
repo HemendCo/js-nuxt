@@ -1,25 +1,8 @@
-export default options => {
-  const getStorageItem = (name) => {
-    const item = localStorage.getItem(name);
-    return !!item ? JSON.parse(item) : null;
-  }
-
-  const setStorageItem = (name, params) => {
-    localStorage.setItem(name, JSON.stringify(params));
-  }
-
-  const removeStorageItem = (name) => {
-    localStorage.removeItem(name);
-  }
-
-  const clearStorage = () => {
-    localStorage.clear();
-  }
-
+export default (options, { $hemend }) => {
   const state = () => {
-    let token = getStorageItem('token');
-    let user = getStorageItem('user');
-    
+    let token = $hemend.storage().get('token');
+    let user = $hemend.storage().get('user');
+
     if(token) {
       let current_time = Date.now();
       let expires_time = Date.parse(token.expires_in);
@@ -27,8 +10,8 @@ export default options => {
       if(current_time > expires_time) {
         token = null;
         user = null;
-        removeStorageItem('token');
-        removeStorageItem('user');
+        $hemend.storage().remove('token');
+        $hemend.storage().remove('user');
       }
     }
   
@@ -55,17 +38,17 @@ export default options => {
   // mutations
   const mutations = {
     save(state, {token, user}) {
-      setStorageItem('token', token);
-      setStorageItem('user', user);
+      $hemend.storage().set('token', token);
+      $hemend.storage().set('user', user);
       state.token = token;
       state.user = user;
     },
     saveToken(state, token) {
-      setStorageItem('token', token);
+      $hemend.storage().set('token', token);
       state.token = token;
     },
     saveUser(state, user) {
-      setStorageItem('user', user);
+      $hemend.storage().set('user', user);
       state.user = user;
     },
     clear(state, all) {
@@ -74,10 +57,10 @@ export default options => {
         state.user = null;
         
         if(all && all === true) {
-          clearStorage();
+          $hemend.storage().clear();
         } else {
-          removeStorageItem('token');
-          removeStorageItem('user');
+          $hemend.storage().remove('token');
+          $hemend.storage().remove('user');
         }
       } catch(e) {
         console.log('Error in auth clear storage: ', e.message);

@@ -1,8 +1,7 @@
-import Vue from 'vue'
+import { vueVersionMajor } from '../../plugins/helpers/vue.js'
 
-const vue_major_ver = Vue.version[0];
-const compatible_components = require('./vue_' + vue_major_ver).default
+const components = require('./vue' + vueVersionMajor()).default
 
 export default {
-    ...compatible_components
+    ...components
 }

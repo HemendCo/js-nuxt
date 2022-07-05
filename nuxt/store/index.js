@@ -6,11 +6,11 @@ const options = JSON.parse(`<%= JSON.stringify(options) %>`)
 // extract the namespace var
 const { namespace } = options
 // create the plugin
-export default ({ store }, inject) => {
-  store.registerModule(namespace, hemend(options), {
-    preserveState: store.hasModule(namespace) // if the store module already exists, preserve it
+export default (app, inject) => {
+  app.store.registerModule(namespace, hemend(options, app), {
+    preserveState: app.store.hasModule(namespace) // if the store module already exists, preserve it
   })
-  store.registerModule('auth', auth(options), {
-    preserveState: store.hasModule('auth') // if the store module already exists, preserve it
+  app.store.registerModule('auth', auth(options, app), {
+    preserveState: app.store.hasModule('auth') // if the store module already exists, preserve it
   })
 }

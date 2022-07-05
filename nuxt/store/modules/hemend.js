@@ -1,5 +1,5 @@
 
-export default options => ({
+export default (options, app) => ({
   namespaced: true,
   state: () => ({
     options
