@@ -19,6 +19,27 @@ const hemendNuxtModule = function (moduleOptions) {
             driver: 'local',
             ttl: 0
         },
+        middleware: {
+            auth: {
+                route: '/login'
+            },
+            guest: {
+                route: '/'
+            },
+        },
+        api: {
+            url: '/',
+            /*
+             * routes: [{name: 'Operator', url: '/api/operator/1/'}, {name: 'Admin', url: '/api/admin/1/'}]
+             *
+             * usage get method: this.$hemend.request().getOperator('sections.get');
+             * usage get method: this.$hemend.request().getAdmin('sections.get');
+             * usage post method: this.$hemend.request().postOperator('sections.get');
+             * usage post method: this.$hemend.request().postAdmin('sections.get');
+             *
+             */
+            routes: []
+        },
         debug: !isProduction
     }, this.options.hemend || {}, moduleOptions);
     // Resolve config paths
@@ -36,7 +57,9 @@ const hemendNuxtModule = function (moduleOptions) {
         '../nuxt/plugins/index.js',
         '../nuxt/plugins/mixin.js',
         '../nuxt/debug.js',
-        '../nuxt/middleware/index.js'
+        '../nuxt/middleware/index.js',
+        '../nuxt/middleware/auth.js',
+        '../nuxt/middleware/guest.js'
     ];
     for (const pathString of pluginsToSync) {
         this.addPlugin({

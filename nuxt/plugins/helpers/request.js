@@ -1,14 +1,19 @@
+// plugins/helpers/request.js
 
-export default class Request {
+import { capitalizeFirstLetter } from 'hemend-js-library'
+
+const REQUEST_METHODS = ['get', 'post'];
+
+class RequestClass {
     /**
-     * @param {import("axios").AxiosStatic} axios
-     * @param {import('../store/index')} store
-     * @param {console.error} nuxtError
+     * @param options
+     * @param app
      */
     constructor (options, app) {
-        this.axios = app.axios
+        this.opt = options.api
+        this.axios = app.$axios
         this.store = app.store
-        this.error = app.nuxtError || console.error
+        this.error = app.error || console.error || app.nuxtError
         this.$plugin = app['$' + options.namespace]
     }
 
@@ -17,8 +22,8 @@ export default class Request {
      * @param {Object|null} data
      * @returns {Promise}
      */
-    get (method, data) {
-        return this.send(method, data, 'get');
+    get (method, data, route) {
+        return this.send(method, data, 'get', route);
     }
 
     /**
@@ -26,38 +31,35 @@ export default class Request {
      * @param {Object|null} data
      * @returns {Promise}
      */
-    post (method, data) {
-        return this.send(method, data, 'post');
+    post (method, data, route) {
+        return this.send(method, data, 'post', route);
     }
 
     /**
      * @param {string} method
-     * @param {Object|null} data
-     * @param {string|null} type
+     * @param {Object|undefined} data
+     * @param {string|undefined} type
+     * @param {Object|undefined} route
      * @returns {Promise}
      */
-    send (method, data, type) {
+    send (method, data, type, route) {
         type = type || 'post';
 
-        if(!['get', 'post'].includes(type)) {
+        if(!REQUEST_METHODS.includes(type)) {
             return Promise.reject('$axios type is not valid')
         }
 
-        let token = this.store.getters['auth/hasToken'] ? this.store.getters['auth/getToken'].access_token : null;
+        const token = this.store.getters['auth/hasToken'] ? this.store.getters['auth/getToken'].access_token : null;
 
         if(token) {
             this.axios.setToken(token, 'Bearer')
         }
 
-        let req;
-        if(type === 'post') {
-            req = this.axios.post;
-        } else {
-            req = this.axios.get;
-        }
+        const url = this.generateUrl(!!route ? route.url : this.opt.url, method);
+        const req = type === 'post' ? this.axios.post : this.axios.get;
 
         const fetchData = function(resolve, reject) {
-            req(method, data).then(function(response) {
+            req(url, data).then(function(response) {
                 if(response.data.status_code === 'OK') {
                     resolve(response.data);
                 } else {
@@ -70,4 +72,27 @@ export default class Request {
 
         return new Promise(fetchData);
     }
+
+    generateUrl(path, method) {
+        return path.replace(/\/*$/gm, '') + '/' + method;
+    }
+}
+
+export const request = (options, app) => {
+    const req = new RequestClass(options, app);
+    const routes = options.api?.routes;
+
+    for(const i in routes) {
+        const route = routes[i];
+        for(const j in REQUEST_METHODS) {
+            const m = REQUEST_METHODS[j];
+            Object.defineProperty(req, m + capitalizeFirstLetter(route.name), {
+                get: () => (method, data) => {
+                    return req[m](method, data, route);
+                }
+            });
+        }
+    }
+
+    return req;
 }

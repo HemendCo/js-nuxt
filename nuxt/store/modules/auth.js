@@ -25,11 +25,11 @@ export default (options, app) => {
   
   // getters
   const getters = {
-    hasToken: ({ getters }) => getters.has('token'),
-    getToken: ({ getters }) => getters.get('token'),
-    hasUser: ({ getters }) => getters.has('user'),
-    getUser: ({ getters }) => getters.get('user'),
-    get: ({ state, getters }) => (param) => {
+    hasToken: (state, getters) => getters.has('token'),
+    getToken: (state, getters) => getters.get('token'),
+    hasUser: (state, getters) => getters.has('user'),
+    getUser: (state, getters) => getters.get('user'),
+    get: (state, getters) => (param) => {
       return getters.has(param) ? state[param] : null;
     },
     has: state => (param) => {

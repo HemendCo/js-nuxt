@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import components from './lib'
+import { capitalizeFirstLetter } from 'hemend-js-library'
 
 // get options passed from module.js
 const options = JSON.parse(`<%= JSON.stringify(options) %>`)
 
 // loop through components and register them
 for (const cName in components) {
-  const name = options.component.prefix + (cName.replace(/^./, cName[0].toUpperCase()));
+  const name = options.component.prefix + capitalizeFirstLetter(cName);
 
   Vue.component(name, {
     // extend the original component
