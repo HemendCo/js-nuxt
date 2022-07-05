@@ -5,25 +5,14 @@ const options = JSON.parse(`<%= JSON.stringify(options) %>`)
 // extract the namespace from the options
 const { namespace, storage } = options
 // create the plugin
-export default ({ store }, inject) => {
-  // get a reference to the vuex store's state
-  const { state } = store
+export default (app, inject) => {
   // inject an object of functions into the app
   inject(namespace, {
-    value() {
-      return helpers.value({ state, namespace })
-    },
-    adjust(adjustment) {
-      return helpers.adjust({ state, store, namespace, adjustment })
-    },
-    log() {
-      return helpers.log({ state, namespace })
-    },
-    message(string) {
-      return console.log(namespace, string)
+    request() {
+      return helpers.request(options, app)
     },
     storage() {
-      return helpers.storage({ ...storage, prefix: storage.prefix ?? namespace })
+      return helpers.storage(storage)
     },
     storageBridge() {
       return helpers.storageBridge;

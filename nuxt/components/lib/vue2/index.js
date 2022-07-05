@@ -1,4 +1,4 @@
-import counterAdjuster from './counterAdjuster.vue'
+import test from './test.vue'
 export default {
-  counterAdjuster
+  test
 }

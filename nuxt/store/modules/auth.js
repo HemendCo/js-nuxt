@@ -1,7 +1,9 @@
-export default (options, { $hemend }) => {
+export default (options, app) => {
+  const $plugin = app['$' + options.namespace]
+
   const state = () => {
-    let token = $hemend.storage().get('token');
-    let user = $hemend.storage().get('user');
+    let token = $plugin.storage().get('token');
+    let user = $plugin.storage().get('user');
 
     if(token) {
       let current_time = Date.now();
@@ -10,8 +12,8 @@ export default (options, { $hemend }) => {
       if(current_time > expires_time) {
         token = null;
         user = null;
-        $hemend.storage().remove('token');
-        $hemend.storage().remove('user');
+        $plugin.storage().remove('token');
+        $plugin.storage().remove('user');
       }
     }
   
@@ -38,17 +40,17 @@ export default (options, { $hemend }) => {
   // mutations
   const mutations = {
     save(state, {token, user}) {
-      $hemend.storage().set('token', token);
-      $hemend.storage().set('user', user);
+      $plugin.storage().set('token', token);
+      $plugin.storage().set('user', user);
       state.token = token;
       state.user = user;
     },
     saveToken(state, token) {
-      $hemend.storage().set('token', token);
+      $plugin.storage().set('token', token);
       state.token = token;
     },
     saveUser(state, user) {
-      $hemend.storage().set('user', user);
+      $plugin.storage().set('user', user);
       state.user = user;
     },
     clear(state, all) {
@@ -57,10 +59,10 @@ export default (options, { $hemend }) => {
         state.user = null;
         
         if(all && all === true) {
-          $hemend.storage().clear();
+          $plugin.storage().clear();
         } else {
-          $hemend.storage().remove('token');
-          $hemend.storage().remove('user');
+          $plugin.storage().remove('token');
+          $plugin.storage().remove('user');
         }
       } catch(e) {
         console.log('Error in auth clear storage: ', e.message);

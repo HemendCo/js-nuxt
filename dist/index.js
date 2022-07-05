@@ -11,6 +11,9 @@ const hemendNuxtModule = function (moduleOptions) {
     // Build module options
     const options = (0, hemend_js_library_1.extend)({
         namespace,
+        component: {
+            prefix: 'Hem'
+        },
         storage: {
             prefix: namespace,
             driver: 'local',

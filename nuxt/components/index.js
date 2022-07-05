@@ -5,10 +5,12 @@ import components from './lib'
 const options = JSON.parse(`<%= JSON.stringify(options) %>`)
 
 // loop through components and register them
-for (const name in components) {
+for (const cName in components) {
+  const name = options.component.prefix + (cName.replace(/^./, cName[0].toUpperCase()));
+
   Vue.component(name, {
     // extend the original component
-    extends: components[name],
+    extends: components[cName],
     // add a plugin options prop to gain access to the options in the component
     props: {
       options: {
