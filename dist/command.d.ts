@@ -35,7 +35,8 @@ export default abstract class Command {
     protected abstract command: string;
     protected abstract description: string;
     protected argv: Argv | undefined;
-    constructor(yargs: yargs.Argv);
+    private _colors;
+    constructor(yargs: yargs.Argv, colors: any);
     arguments(): Arguments;
     options(): Options;
     readonly setArgv: (argv: yargs.Arguments) => this;
@@ -46,4 +47,5 @@ export default abstract class Command {
     getDescription(): string;
     call(params: any): this;
     protected readonly yargs: () => yargs.Argv;
+    protected colors(): any;
 }

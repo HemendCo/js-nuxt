@@ -33,6 +33,7 @@
   "dependencies": {
     "ansi-colors": "^4.1.1",
     "enquirer": "^2.3.6",
+    "fs-extra": "^10.1.0",
     "hemend-js-library": "git+https://github.com/HemendCo/js-library.git",
     "moment-jalaali": "^0.9.6",
     "semver": "^7.3.6",

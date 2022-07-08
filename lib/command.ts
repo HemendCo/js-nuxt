@@ -41,9 +41,11 @@ export default abstract class Command {
     protected abstract command: string;
     protected abstract description: string;
     protected argv: Argv|undefined;
+    private _colors: any;
 
-    public constructor(yargs: yargs.Argv) {
+    public constructor(yargs: yargs.Argv, colors: any) {
         this._yargs = yargs;
+        this._colors = colors
     }
 
     public arguments(): Arguments {
@@ -88,5 +90,9 @@ export default abstract class Command {
 
     protected readonly yargs = (): yargs.Argv => {
       return this._yargs;
+    }
+
+    protected colors() {
+        return this._colors;
     }
 }

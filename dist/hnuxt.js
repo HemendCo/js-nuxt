@@ -29,7 +29,7 @@ fs.readdirSync(__dirname + '/commands/').forEach(function (file) {
         let filepath = './commands/' + path.basename(path.basename(file, '.d.ts'), '.ts');
         let cmdClass = require(filepath).default;
         if (cmdClass.prototype instanceof command_1.default) {
-            var cmd = new cmdClass(yargs_1.default);
+            var cmd = new cmdClass(yargs_1.default, colors);
             yargs_1.default
                 .command({
                 command: cmd.getCommand(),
@@ -127,7 +127,7 @@ const argv = yargs_1.default
         });
         prompt.run()
             .then((prtName) => {
-            const prt = new commands[prtName](yargs_1.default);
+            const prt = new commands[prtName](yargs_1.default, colors);
             prt.handler();
         })
             .catch(console.error);

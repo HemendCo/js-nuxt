@@ -1,7 +1,5 @@
 // plugins/helpers/request.js
 
-import { capitalizeFirstLetter } from 'hemend-js-library'
-
 const REQUEST_METHODS = ['get', 'post'];
 
 class RequestClass {
@@ -82,11 +80,9 @@ export const request = (options, app) => {
     const req = new RequestClass(options, app);
     const routes = options.api?.routes;
 
-    for(const i in routes) {
-        const route = routes[i];
-        for(const j in REQUEST_METHODS) {
-            const m = REQUEST_METHODS[j];
-            Object.defineProperty(req, m + capitalizeFirstLetter(route.name), {
+    for(const route of routes) {
+        for (const m of REQUEST_METHODS) {
+            Object.defineProperty(req, m + route.name.ucfirst(), {
                 get: () => (method, data) => req[m](method, data, route)
             });
         }

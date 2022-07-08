@@ -1,0 +1,264 @@
+<template>
+  <div class="padding-50 sm-p-t-20 sm-p-r-0 sm-p-l-0">
+    <!-- START CONTAINER FLUID -->
+    <div v-if="!sended_code" class="lock-container">
+      <div class="card card-default">
+        <div class="card-block">
+          <div class="lg-padding-30 sm-padding-5">
+            <h5 class="text-center m-b-40">
+              کاربر محترم خوش آمدید<br />
+              برای ورود اطلاعات زیر را وارد نمایید
+            </h5>
+
+            <form class="form-horizontal" role="form" autocomplete="off" novalidate="novalidate" method="POST">
+              <div class="m-t-20 row">
+                <label for="mobile" class="col-md-3 control-label">شماره همراه</label>
+                <div class="col-md-9">
+                  <input type="text"
+                         :class="['form-control', mobile_error ? 'error' : '']"
+                         dir="ltr"
+                         id="mobile"
+                         ref="mobile"
+                         v-model="mobile"
+                         @keypress="mobileUpdateValue"
+                         @input="mobileUpdateValue"
+                         @paste="pasteStop"
+                         :disabled="loading"
+                         placeholder="0935***9579"
+                         maxlength="11"
+                         @keydown.enter.prevent="sendCode"
+                  />
+                  <label class="error" for="mobile" v-if="mobile_error">{{ mobile_error }}</label>
+                </div>
+              </div>
+              <div class="m-t-20 row">
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <button
+                      class="btn btn-info"
+                      type="button"
+                      @click.prevent="sendCode"
+                      :disabled="loading">دریافت کد ورود</button>
+                </div>
+              </div>
+              <input type="hidden" name="_token" :value="$root.laravel.csrfToken" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END CONTAINER FLUID -->
+
+    <!-- START CONTAINER FLUID -->
+    <div v-else class="lock-container">
+      <div class="card card-default">
+        <div class="card-block">
+          <div class="lg-padding-30 sm-padding-5">
+            <h5 class="text-center m-b-40">
+              کاربر محترم<br />
+              لطفا کد ورود را وارد نمایید
+            </h5>
+
+            <h5 class="text-center">{{ timer_text }}</h5>
+
+            <form class="form-horizontal" role="form" autocomplete="off" novalidate="novalidate" method="POST">
+              <div class="m-t-20 row">
+                <label for="code" class="col-md-3 control-label">کد ورود</label>
+                <div class="col-md-9">
+                  <input
+                      type="text"
+                      :class="['form-control', code_error ? 'error' : '']"
+                      dir="ltr"
+                      id="code"
+                      ref="code"
+                      v-model="code"
+                      @keypress="keypressDigitOfInput"
+                      @input="pasteDigitOfInput"
+                      maxlength="4"
+                      :disabled="loading"
+                      @keydown.enter.prevent="login"
+                      autofocus
+                  />
+                  <label class="error" for="code" v-if="code_error">{{ code_error }}</label>
+                </div>
+              </div>
+              <div class="m-t-20 row">
+                <div class="col-md-3"></div>
+                <div class="col-md-9">
+                  <button
+                      class="btn btn-info"
+                      type="button"
+                      @click.prevent="login"
+                      :disabled="loading">ورود</button>
+                </div>
+              </div>
+              <input type="hidden" name="_token" :value="$root.laravel.csrfToken" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- END CONTAINER FLUID -->
+
+  </div>
+</template>
+
+<script>
+import { sprintf, countDownTimer } from 'hemend-js-library';
+
+export default {
+  data() {
+    let timer = new countDownTimer();
+    timer.onTick((minutes, seconds, stop) => {
+      this.timer_text = ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2);
+
+      if(!minutes && !seconds && !stop) {
+        if(this.sended_code) {
+          $('.page-content-wrapper').pgNotification({
+            style: 'simple',
+            message: 'کد قبلی منقضی شده است. لطفا مجددا اقدام نمایید.',
+            position: 'top-left',
+            timeout: 6000,
+            type: 'danger'
+          }).show();
+        }
+
+        this.sended_code = false;
+        this.loading = false;
+      }
+    });
+
+    return {
+      timerMaxSeconds: 60 * 2, // 2 Min
+      timer: timer,
+      mobile: '',
+      mobile_error: '',
+      code: '',
+      code_error: '',
+      sended_code: false,
+      waiting_login: false,
+      timer_text: '00:00',
+      loading: false,
+      hash: null,
+    };
+  },
+
+  methods: {
+    login () {
+      if(this.code == '') {
+        this.code_error = 'کد ورود را وارد نمایید';
+      } else if(/^\d{4}$/.test(this.code.toEnglishDigit()) == false) {
+        this.code_error = 'کد ورود معتبر نمی باشد';
+      } else {
+        this.code_error = '';
+      }
+
+      if(!this.code_error) {
+        this.loading = true;
+
+        this.$hemend.request().post('auth.signIn', {hash: this.hash, code: this.code, mobile: this.mobile}).then((result) => {
+          this.loading = false;
+
+          delete result.status_code;
+
+          this.$store.commit('auth/save', result);
+
+          this.timer.stop();
+
+          $('.page-content-wrapper').pgNotification({
+            style: 'simple',
+            message: 'ورود شما با موفقیت انجام شد. یک ساعت فرصت ارسال اطلاعات را دارید.',
+            position: 'top-left',
+            timeout: 6000,
+            type: 'success'
+          }).show();
+
+          this.$router.push({
+            name: 'Dashboard'
+          });
+        }).catch((e) => {
+          let data = e.response.data;
+          this.loading = false;
+
+          if(e && ['MOBILE_NUMBER_UNOCCUPIED', 'ACCESS_DENIED'].includes(data.status_code)) {
+            this.code = '';
+            this.sended_code = false;
+            this.timer.stop();
+          }
+
+          // this.server_error = e.status_message;
+          $('.page-content-wrapper').pgNotification({
+            style: 'simple',
+            message: data.status_message,
+            position: 'top-left',
+            timeout: 6000,
+            type: 'danger'
+          }).show();
+        });
+      }
+    },
+
+    sendCode () {
+      if(this.mobile == '') {
+        this.mobile_error = 'شماره موبایل را وارد نمایید';
+      } else if (this.regex_mobile.test(this.mobile.toEnglishDigit()) == false) {
+        this.mobile_error = 'شماره موبایل معتبر نمی باشد';
+      } else {
+        this.mobile_error = '';
+      }
+
+      if(!this.mobile_error) {
+        this.loading = true;
+        this.$hemend.request().post('auth.sendCode', {mobile: this.mobile}).then((data) => {
+          this.hash = data.hash;
+          this.loading = false;
+          this.timer.start(this.timerMaxSeconds);
+          this.sended_code = true;
+          $('.page-content-wrapper').pgNotification({
+            style: 'simple',
+            message: sprintf('کد ورود برای شماره %s ارسال شده است.', this.mobile),
+            position: 'top-left',
+            timeout: 6000,
+            type: 'success'
+          }).show();
+
+          this.$nextTick(() => this.$refs.code.focus());
+
+        }).catch((e) => {
+          let data = e.response.data;
+          this.loading = false;
+
+          if(e && data.status_code == 'WAITING_TO_SEND_AGAIN') {
+            this.timer.start(data.remaining_time);
+            this.sended_code = true;
+            this.$nextTick(() => this.$refs.code.focus());
+          }
+
+          $('.page-content-wrapper').pgNotification({
+            style: 'simple',
+            message: data.status_message,
+            position: 'top-left',
+            timeout: 6000,
+            type: 'danger'
+          }).show();
+        });
+      }
+    },
+    mobileUpdateValue(e) {
+      e = (e) ? e : window.event;
+
+      if(e.type === 'keypress') {
+        this.keypressDigitOfInput(e);
+      } else {
+        let mobile = this.mobile.toEnglishDigit();
+
+        if(mobile.length >= 2 && mobile.substr(0, 2) != '09') {
+          this.$nextTick(() => {
+            this.mobile = this.$refs.mobile.value = '';
+          });
+        }
+      }
+    },
+  }
+}
+</script>

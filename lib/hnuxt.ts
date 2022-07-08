@@ -29,7 +29,7 @@ fs.readdirSync(__dirname + '/commands/').forEach( function( file:any ) {
     let cmdClass = require( filepath ).default;
 
     if(cmdClass.prototype instanceof Command) {
-      var cmd: Command = new cmdClass(yargs);
+      var cmd: Command = new cmdClass(yargs, colors);
 
       yargs
         .command({
@@ -144,7 +144,7 @@ const argv = yargs
 
       prompt.run()
         .then((prtName: string) => {
-            const prt: Prompet = new commands[prtName](yargs);
+            const prt: Prompet = new commands[prtName](yargs, colors);
             prt.handler();
         })
         .catch(console.error);

@@ -12,7 +12,7 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 class Command {
-    constructor(yargs) {
+    constructor(yargs, colors) {
         this.aliases = [];
         this.setArgv = (argv) => {
             let { _, $0 } = argv, args = __rest(argv, ["_", "$0"]);
@@ -24,6 +24,7 @@ class Command {
             return this._yargs;
         };
         this._yargs = yargs;
+        this._colors = colors;
     }
     arguments() {
         return [];
@@ -47,6 +48,9 @@ class Command {
     call(params) {
         this._yargs.parse(params);
         return this;
+    }
+    colors() {
+        return this._colors;
     }
 }
 exports.default = Command;

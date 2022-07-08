@@ -2,9 +2,11 @@ import yargs from 'yargs';
 
 export default abstract class Prompet {
   private _yargs: yargs.Argv;
+  private _colors: any;
 
-  public constructor(yargs:any) {
+  public constructor(yargs:any, colors: any) {
     this._yargs = yargs;
+    this._colors = colors
   }
 
   public static title() : string {
@@ -20,5 +22,9 @@ export default abstract class Prompet {
 
   protected readonly yargs = (): yargs.Argv => {
     return this._yargs;
+  }
+
+  protected colors() {
+      return this._colors;
   }
 }
