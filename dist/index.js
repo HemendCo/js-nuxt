@@ -56,6 +56,8 @@ const hemendNuxtModule = function (moduleOptions) {
         '../nuxt/store/index.js',
         '../nuxt/plugins/index.js',
         '../nuxt/plugins/mixin.js',
+        '../nuxt/plugins/directive.js',
+        '../nuxt/plugins/flash-message.js',
         '../nuxt/debug.js',
         '../nuxt/middleware/index.js',
         '../nuxt/middleware/auth.js',
@@ -71,6 +73,10 @@ const hemendNuxtModule = function (moduleOptions) {
     // sync all of the files and folders to revelant places in the nuxt build dir (.nuxt/)
     const foldersToSync = [
         {
+            path: '../nuxt/plugins/directives',
+            recursive: false
+        },
+        {
             path: '../nuxt/plugins/helpers',
             recursive: false
         },
@@ -85,7 +91,11 @@ const hemendNuxtModule = function (moduleOptions) {
         {
             path: '../nuxt/components/lib',
             recursive: true
-        }
+        },
+        {
+            path: '../nuxt/assets',
+            recursive: true
+        },
     ];
     const addTemplate = (path, pathString, recursive = false) => {
         for (const dirent of readdirSync(path, { withFileTypes: true })) {

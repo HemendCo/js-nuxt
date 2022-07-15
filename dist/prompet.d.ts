@@ -1,3 +1,4 @@
+import yargs from 'yargs';
 export default abstract class Prompet {
     private _yargs;
     private _colors;
